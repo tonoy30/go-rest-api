@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	PORT = ":8080"
+	PORT = ":8081"
 )
 
 func main() {
@@ -20,6 +20,7 @@ func main() {
 	r.HandleFunc("/", middlewares.Logging(handlers.Home)).Methods(http.MethodGet)
 	r.HandleFunc("/contact", middlewares.Logging(handlers.Contact)).Methods(http.MethodGet, http.MethodPost)
 	articleRoute(r)
+	log.Printf("Server is listening on http://localhost%s\n", PORT)
 	log.Fatal(http.ListenAndServe(PORT, r))
 }
 func articleRoute(r *mux.Router) {

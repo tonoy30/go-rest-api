@@ -21,7 +21,7 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&article)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 	res, err := services.CreateArticle(article)
@@ -44,21 +44,32 @@ func GetArticleById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(article)
 }
+
 func UpdateArticleById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	ID := vars["id"]
-	article, err := services.GetArticleById(ID)
+
+	_, err := services.GetArticleById(ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	article, err = services.UpdateArticle(ID, article)
+
+	var article models.Article
+	err = json.NewDecoder(r.Body).Decode(&article)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
+
+	res, err := services.UpdateArticle(ID, article)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(article)
+	json.NewEncoder(w).Encode(res)
 }
 
 func DeleteArticleById(w http.ResponseWriter, r *http.Request) {
